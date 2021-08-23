@@ -1,6 +1,9 @@
 <?php
 
+use Illuminate\Support\Facades\app;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 
 
@@ -12,9 +15,9 @@ Route::get('1', function () {
 });
 
 
-//  قمنا بوضع براميتر أجباري 
+//  قمنا بوضع براميتر أجباري
 Route::get('2/{id}', function ($id) {
-   
+
     echo "هنا براميتر أجباري ولن يتم عرض الصفحة إلا مع البراميت";
 
     return $id;
@@ -52,7 +55,7 @@ Route::get('6', 'NewControllers\FirstController@ShowString');
 
 
 // مثال على namespace
-// مثال على 
+// مثال على
 Route::group(['namespace' => 'newControllers'], function(){
 
     Route::get('7', 'FirstController@ShowString') -> middleware ('auth'); // مثال على مديل وير هنا
@@ -63,11 +66,49 @@ Route::group(['namespace' => 'newControllers'], function(){
 
 });
 
-Route::resource ('news', 'ThirdController');
+Route::resource ('news', 'ThirdController@');
 
+
+
+////////////////////////////////////////////////
+
+Route::group(['prefix' =>LaravelLocalization::setLocale(),
+'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath']], function(){
+
+    Route::get ('offer/1', 'ThirdController@offer_create');
+    Route::post('post', 'ThirdController@offer_post' )-> name ('offer-Post');
+
+    Route::get ('offer/3', 'ThirdController@store');
+
+    Route::get ('offer/2', 'ThirdController@create')-> name ('offer_all');
+    Route::get ('edit/{offer_id}', 'ThirdController@editoffer');
+    Route::post ('update/{offer_id}', 'ThirdController@updateoffer')-> name ('offer_update');
+    Route::get ('delete/{offer_id}', 'ThirdController@deleteoffer')-> name ('offer_delete');
+
+    Route::get ('youtube', 'ThirdController@getvideo');
+
+
+    /////////////////////////////////////////////// AJAX ///////////////////////////////////////////////
+
+
+    Route::get('ajaxoffer/1', 'offercontroller@create');
+    Route::post('ajaxoffer/2', 'offercontroller@store')-> name ('ajax-offers-store');
+    Route::get('ajaxoffer/3', 'offercontroller@ajaxShow')-> name ('ajax-offers-show');
+    Route::post('deleteAjax/{offer_id', 'offercontroller@deleteAjax')-> name ('ajax-offers-delete');
+
+
+   //////////////////////////////////////////////// AJAX ///////////////////////////////////////////////
+
+});
+
+
+
+///////////////////////////////////////////////
 
 
 
 Auth::routes(['verify'=> true]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware('verified');
+
+
